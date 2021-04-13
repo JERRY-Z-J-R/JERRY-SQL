@@ -1,0 +1,59 @@
+CREATE TABLE Student
+	(Sno CHAR(9) PRIMARY KEY,
+	Sname CHAR(20) UNIQUE,
+	Ssex CHAR(2),
+	Sage SMALLINT,
+	Sdept CHAR(20)
+	);
+
+CREATE TABLE Course
+	(Cno CHAR(4) PRIMARY KEY,
+	Cname CHAR(40) NOT NULL,
+	Cpno CHAR(4),
+	Ccredit SMALLINT,
+	FOREIGN KEY(Cpno) REFERENCES Course(Cno)
+	);
+
+CREATE TABLE SC
+	(Sno CHAR(9),
+	Cno CHAR(4),
+	Grade SMALLINT,
+	PRIMARY KEY(Sno,Cno),
+	FOREIGN KEY(Sno)REFERENCES Student(Sno),
+	FOREIGN KEY(Cno)REFERENCES Course(Cno)
+	);
+
+INSERT
+INTO Student(Sno,Sname,Ssex,Sage,Sdept)
+VALUES('201215121','李勇','男',20,'CS'),
+('201215122','刘晨','女',19,'CS'),
+('201215123','王敏','女',18,'MA'),
+('201215125','张立','男',19,'IS');
+
+INSERT
+INTO Course(Cno,Cname,Cpno,Ccredit)
+VALUES('1','数据库',NULL,4),
+	('2','数学',NULL,2),
+	('3','信息系统',NULL,4),
+	('4','操作系统',NULL,3),
+	('5','数据结构',NULL,4),
+	('6','数据处理',NULL,2),
+	('7','PASCAL语言',NULL,4);
+
+UPDATE Course SET Cpno='5' where Cno='1';
+UPDATE Course SET Cpno='1' where Cno='3';
+UPDATE Course SET Cpno='6' where Cno='4';
+UPDATE Course SET Cpno='7' where Cno='5';
+UPDATE Course SET Cpno='6' where Cno='7';
+
+INSERT
+INTO SC(Sno,Cno,Grade)
+VALUES('201215121','1',92),
+	('201215121','2',85),
+	('201215121','3',88),
+	('201215122','2',90),
+	('201215122','3',80);
+
+
+
+
