@@ -1,0 +1,285 @@
+-- 切换到zjr数据库
+ USE zjr;
+
+-- 创建Student表
+CREATE TABLE Student
+	(Sno CHAR(9) PRIMARY KEY,
+	Sname CHAR(20) UNIQUE,
+	Ssex CHAR(2),
+	Sage SMALLINT,
+	Sdept CHAR(20)
+	);
+
+-- 创建Course表
+CREATE TABLE Course
+	(Cno CHAR(4) PRIMARY KEY,
+	Cname CHAR(40) NOT NULL,
+	Cpno CHAR(4),
+	Ccredit SMALLINT,
+	FOREIGN KEY(Cpno) REFERENCES Course(Cno)
+	);
+
+-- 创建SC表
+CREATE TABLE SC
+	(Sno CHAR(9),
+	Cno CHAR(4),
+	Grade SMALLINT,
+	PRIMARY KEY(Sno,Cno),
+	FOREIGN KEY(Sno)REFERENCES Student(Sno),
+	FOREIGN KEY(Cno)REFERENCES Course(Cno)
+	);
+
+-- 向Student表插入数据
+INSERT
+INTO Student(Sno,Sname,Ssex,Sage,Sdept)
+VALUES('201215121','李勇','男',20,'CS'),
+('201215122','刘晨','女',19,'CS'),
+('201215123','王敏','女',18,'MA'),
+('201215125','张立','男',19,'IS');
+
+-- 向Course表插入数据（注意：Cpno开始要为空，因为Cpno关联于Cno）
+INSERT
+INTO Course(Cno,Cname,Cpno,Ccredit)
+VALUES('1','数据库',NULL,4),
+	('2','数学',NULL,2),
+	('3','信息系统',NULL,4),
+	('4','操作系统',NULL,3),
+	('5','数据结构',NULL,4),
+	('6','数据处理',NULL,2),
+	('7','PASCAL语言',NULL,4);
+
+-- 更新Course表的Cpno列
+UPDATE Course SET Cpno='5' WHERE Cno='1';
+UPDATE Course SET Cpno='1' WHERE Cno='3';
+UPDATE Course SET Cpno='6' WHERE Cno='4';
+UPDATE Course SET Cpno='7' WHERE Cno='5';
+UPDATE Course SET Cpno='6' WHERE Cno='7';
+
+-- 向SC表插入数据
+INSERT
+INTO SC(Sno,Cno,Grade)
+VALUES('201215121','1',92),
+	('201215121','2',85),
+	('201215121','3',88),
+	('201215122','2',90),
+	('201215122','3',80);
+
+-- 向Student表增加“入学时间”列，其数据类型为日期型
+ ALTER TABLE Student
+  ADD S_entrance DATE;
+
+-- 备份Student表
+-- 先创建一个Student1表
+ CREATE TABLE Student1 (
+  Sno CHAR (9) PRIMARY KEY,
+  Sname CHAR (20) UNIQUE,
+  Ssex CHAR (2),
+  Sage SMALLINT,
+  Sdept CHAR (20)
+);
+
+-- 向Student1表增加“入学时间”列，其数据类型为日期型
+ ALTER TABLE Student1
+  ADD S_entrance DATE;
+
+-- 将Student表的数据全部插入到Student1表中
+ INSERT INTO Student1
+SELECT
+  *
+FROM
+  Student;
+
+-- 删除Student1表
+-- 可以发现Student1表可以被成功删除
+ DROP TABLE student1;
+
+-- 删除Student表
+-- 可以发现Student表删除失败
+-- 原因：Course表及CS表的数据关联于Student表，所以不能直接删除Student表
+-- 若要强行删除Student表，则要先删除Course表及SC表（要删除Course先要删除SC）
+-- drop table student;
+-- 查询全体学生的学号与姓名
+ SELECT
+  sno,
+  sname
+FROM
+  student;
+
+-- 查询全体学生的姓名、学号、所在系
+ SELECT
+  sname,
+  sno,
+  sdept
+FROM
+  student;
+
+-- 查询全体学生的详细记录
+ SELECT
+  *
+FROM
+  student;
+
+-- 查全体学生的姓名及其出生年份
+ SELECT
+  sname,
+  2021- sage AS '出生年份'
+FROM
+  student;
+
+-- 查询全体学生的姓名、出生年份和所在的院系，要求用小写字母表示系名
+ SELECT
+  sname,
+  2021- sage AS '出生年份',
+  LOWER (sdept) AS sdept
+FROM
+  student;
+
+-- 查询选修了课程的学生学号
+ SELECT DISTINCT
+  sno
+FROM
+  SC;
+
+-- 查询计算机科学系全体学生的名单
+ SELECT
+  sname
+FROM
+  student
+WHERE sdept = 'CS';
+
+-- 统计学生数
+ SELECT
+  COUNT (sno)
+FROM
+  student;
+
+SELECT
+  -- 查询所有年龄在20岁以下的学生姓名及其年龄
+   SELECT
+    sname,
+    sage
+  FROM
+    student
+  WHERE sage < 20;
+
+-- 查询考试成绩有不及格的学生的学号
+ SELECT
+  sno
+FROM
+  sc
+WHERE grade < 60;
+
+-- 查询年龄在20~23岁（包括20岁和23岁）之间的学生的姓名、系别和年龄
+ SELECT
+  sname,
+  sage
+FROM
+  student
+WHERE sage BETWEEN 20
+  AND 23;
+
+-- 查询年龄在20~23岁（包括20岁和23岁）之间的学生的姓名、系别和年龄
+ SELECT
+  sname,
+  sage
+FROM
+  student
+WHERE sage >= 20
+  AND sage <= 23;
+
+-- 查询年龄在20~23岁（包括20岁和23岁）之间的学生的姓名、系别和年龄
+ SELECT
+  sname,
+  sage
+FROM
+  student
+WHERE sage IN (20, 21, 22, 23);
+
+-- 查询年龄不在20~23岁之间的学生姓名、系别和年龄
+ SELECT
+  sname,
+  sage
+FROM
+  student
+WHERE sage NOT BETWEEN 20
+  AND 23;
+
+-- 查询年龄不在20~23岁之间的学生姓名、系别和年龄
+ SELECT
+  sname,
+  sage
+FROM
+  student
+WHERE sage NOT IN (20, 21, 22, 23);
+
+-- 查询计算机科学系（CS）、数学系（MA）和信息系（IS）学生的姓名和性别
+ SELECT
+  sname,
+  ssex
+FROM
+  student
+WHERE sdept IN ('CS', 'MA', 'IS');
+
+-- 查询计算机科学系（CS）、数学系（MA）和信息系（IS）学生的姓名和性别
+ SELECT
+  sname,
+  ssex
+FROM
+  student
+WHERE sdept = 'CS'
+  OR sdept = 'MA'
+  OR Sdept = 'IS';
+
+-- 查询计算机科学系（CS）、数学系（MA）和信息系（IS）学生的姓名和性别
+ SELECT
+  sname,
+  ssex
+FROM
+  student
+WHERE sdept LIKE 'CS'
+  OR sdept LIKE 'MA'
+  OR Sdept LIKE 'IS';
+
+-- 查询既不是计算机科学系、数学系，也不是信息系的学生的姓名和性别
+ SELECT
+  sname,
+  ssex
+FROM
+  student
+WHERE sdept NOT IN ('CS', 'MA', 'IS');
+
+-- 查询既不是计算机科学系、数学系，也不是信息系的学生的姓名和性别
+ SELECT
+  sname,
+  ssex
+FROM
+  student
+WHERE sdept != 'CS'
+  AND sdept != 'MA'
+  AND Sdept != 'IS';
+
+-- 查询既不是计算机科学系、数学系，也不是信息系的学生的姓名和性别
+ SELECT
+  sname,
+  ssex
+FROM
+  student
+WHERE sdept NOT LIKE 'CS'
+  AND sdept NOT LIKE 'MA'
+  AND Sdept NOT LIKE 'IS';
+
+-- 查询学号为201215121的学生的详细情况
+ SELECT
+  *
+FROM
+  student
+WHERE sno = '201215121';
+
+-- 查询所有姓刘学生的姓名、学号和性别
+ SELECT
+  sname,
+  sno,
+  ssex
+FROM
+  student
+WHERE sname LIKE '刘%';
