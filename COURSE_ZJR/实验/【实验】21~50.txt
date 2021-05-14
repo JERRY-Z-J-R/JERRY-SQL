@@ -1,0 +1,251 @@
+# 切换到course_zjr数据库
+USE course_zjr;
+
+# 查询姓"欧阳"且全名为三个汉字的学生的姓名
+SELECT Sname
+FROM student
+WHERE Sname LIKE '欧阳_';
+
+# 查询名字中第2个字为"阳"字的学生的姓名和学号
+SELECT Sname, Sno
+FROM student
+WHERE Sname LIKE '_阳%';
+
+# 查询所有不姓刘的学生姓名、学号和性别
+SELECT Sname, Sno, Ssex
+FROM student
+WHERE Sname NOT LIKE '刘%';
+
+# 查询DB_Design课程的课程号和学分
+SELECT Cno, Ccredit
+FROM course
+WHERE Cname = 'DB_Design';
+
+# 查询以"DB_"开头，且倒数第3个字符为 i的课程的详细情况
+SELECT *
+FROM course
+WHERE Cname LIKE 'DB\_%i__';
+
+# 某些学生选修课程后没有参加考试，
+# 所以有选课记录，但没有考试成绩,
+# 查询缺少成绩的学生的学号和相应的课程号
+SELECT Sno, Cno
+FROM sc
+WHERE Grade IS NULL;
+
+# 查所有有成绩的学生学号和课程号
+SELECT Sno, Cno
+FROM sc
+WHERE Grade IS NOT NULL;
+
+# 查询计算机系年龄在20岁以下的学生姓名
+SELECT Sname, Sage
+FROM student
+WHERE Sage < 20
+  AND Sdept = 'CS';
+
+# 查询计算机科学系（CS）、数学系（MA）和信息系（IS）学生的姓名和性别
+SELECT Sname
+FROM student
+WHERE Sdept IN ('CS', 'MA', 'IS');
+
+# 查询计算机科学系（CS）、数学系（MA）和信息系（IS）学生的姓名和性别
+SELECT Sname
+FROM student
+WHERE Sdept = 'CS'
+   OR Sdept = 'MA'
+   OR Sdept = 'IS';
+
+# 查询计算机科学系（CS）、数学系（MA）和信息系（IS）学生的姓名和性别
+SELECT Sname
+FROM student
+WHERE Sdept LIKE 'CS'
+   OR Sdept LIKE 'MA'
+   OR Sdept LIKE 'IS';
+
+# 查询选修了3号课程的学生的学号及其成绩，查询结果按分数降序排列
+SELECT Sno, Grade
+FROM sc
+WHERE Cno = 3
+ORDER BY Grade DESC;
+
+# 查询全体学生情况，查询结果按所在系的系号升序排列，同一系中的学生按年龄降序排列
+SELECT *
+FROM student
+ORDER BY Sdept, Sage DESC;
+
+# 查询全体学生情况，查询结果按所在系的系号升序排列，同一系中的学生按年龄降序排列
+SELECT *
+FROM student
+ORDER BY Sdept ASC, Sage DESC;
+
+# 查询学生总人数
+SELECT COUNT(Sno) AS student_count
+FROM student;
+
+# 查询学生总人数
+SELECT COUNT(DISTINCT Sno) AS student_count
+FROM student;
+
+# 查询选修了课程的学生人数。
+SELECT COUNT(DISTINCT sno) AS student_cs_count
+FROM sc;
+
+# 计算1号课程的学生平均成绩
+SELECT AVG(Grade) AS grade_avg
+FROM sc
+WHERE Cno = '1';
+
+# 查询选修1号课程的学生最高分数
+SELECT MAX(Grade) AS grade_max
+FROM sc
+WHERE Cno = '1';
+
+# 查询学生201215012选修课程的总学分数
+SELECT SUM(Ccredit) AS ccredit_sum
+FROM course,
+     sc
+WHERE Sno = '201215121'
+  AND sc.Cno = course.Cno;
+
+# 求各个课程号及相应的选课人数
+SELECT Cno, COUNT(Sno) AS sno_count
+FROM sc
+GROUP BY Cno;
+
+# 查询选修了3门以上课程的学生学号
+SELECT Sno
+FROM sc
+GROUP BY Sno
+HAVING COUNT(Cno) >= 3;
+
+# 查询平均成绩大于等于90分的学生学号和平均成绩
+SELECT Sno, AVG(Grade) AS grade_avg
+FROM sc
+GROUP BY Sno
+HAVING AVG(Grade) >= 90;
+
+# 查询每个学生及其选修课程的情况
+SELECT student.*, sc.*
+FROM student,
+     sc
+WHERE sc.Sno = student.Sno;
+
+# 查询选修2号课程且成绩在90分以上的所有学生的学号和姓名
+SELECT student.Sno, Sname
+FROM sc,
+     student
+WHERE Cno = 2
+  AND Grade >= 90
+  AND sc.Sno = student.Sno;
+
+# 查询每个学生的学号、姓名、选修的课程名及成绩
+SELECT student.Sno, student.Sname, course.Cname, sc.Grade
+FROM student,
+     course,
+     sc
+WHERE student.Sno = sc.Sno
+  AND sc.Cno = course.Cno;
+
+# 查询与“刘晨”在同一个系学习的学生
+SELECT *
+FROM student
+WHERE Sdept IN (
+    SELECT Sdept
+    FROM student
+    WHERE Sname = '刘晨'
+);
+
+# 查询与“刘晨”在同一个系学习的学生
+SELECT *
+FROM student
+WHERE Sdept = (
+    SELECT Sdept
+    FROM student
+    WHERE Sname = '刘晨'
+);
+
+# 查询与“刘晨”在同一个系学习的学生
+SELECT *
+FROM student
+WHERE Sdept LIKE (
+    SELECT Sdept
+    FROM student
+    WHERE Sname = '刘晨'
+);
+
+# 查询选修了课程名为“信息系统”的学生学号和姓名
+SELECT Sno, Sname
+FROM student
+WHERE Sno IN (
+    SELECT Sno
+    FROM sc
+    WHERE sc.Cno IN (
+        SELECT Cno
+        FROM course
+        WHERE Cname = '信息系统'
+    )
+);
+
+# 找出每个学生超过他选修课程平均成绩的课程号
+SELECT Sno, Cno, Grade
+FROM sc x
+WHERE Grade > (
+    SELECT AVG(Grade)
+    FROM sc y
+    WHERE x.Sno = y.Sno
+);
+
+# 找出每个学生超过他选修课程平均成绩的课程号
+SELECT Sno, Cno, Grade
+FROM sc
+WHERE Grade > ALL (
+    SELECT AVG(Grade)
+    FROM sc
+    GROUP BY Sno
+);
+
+# 查询非计算机科学系中比计算机科学系任意一个学生年龄小的学生姓名和年龄
+SELECT Sname, Sage
+FROM student
+WHERE Sdept <> 'CS'
+  AND Sage < ANY (
+    SELECT Sage
+    FROM student
+    WHERE Sdept = 'CS'
+);
+
+# 查询非计算机科学系中比计算机科学系所有学生年龄都小的学生姓名及年龄
+SELECT Sname, Sage
+FROM student
+WHERE Sdept <> 'CS'
+  AND Sage < ALL (
+    SELECT Sage
+    FROM student
+    WHERE Sdept = 'CS'
+);
+
+# 查询所有选修了1号课程的学生姓名
+SELECT DISTINCT student.Sname
+FROM student,
+     sc
+WHERE sc.Sno = student.Sno
+  AND sc.Cno = '1';
+
+# 查询没有选修1号课程的学生姓名
+SELECT DISTINCT student.Sname
+FROM sc
+         LEFT JOIN student ON student.Sno NOT IN (
+    SELECT Sno
+    FROM sc
+    WHERE Cno = '1'
+);
+
+# 查询与“刘晨”在同一个系学习的学生
+SELECT *
+FROM student
+WHERE Sdept IN (
+    SELECT Sdept
+    FROM student
+    WHERE Sname = '刘晨'
+);
