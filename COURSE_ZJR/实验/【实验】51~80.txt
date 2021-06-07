@@ -1,0 +1,142 @@
+SELECT DISTINCT Sname
+FROM SC,
+     student
+WHERE SC.Sno = student.Sno;
+
+SELECT Sname
+FROM student
+WHERE Sno IN (
+    SELECT DISTINCT Sno
+    FROM SC
+    WHERE Cno IN (
+        SELECT DISTINCT Cno
+        FROM SC
+    )
+);
+
+SELECT COUNT(DISTINCT Cno)
+FROM SC;
+
+SELECT DISTINCT Cno
+FROM SC;
+
+# 52
+SELECT Sno
+FROM sc
+WHERE Cno
+
+
+# 53
+SELECT *
+FROM student
+WHERE sdept='CS' AND Sage <= 19;
+
+SELECT *
+FROM student
+WHERE Sdept = 'CS';
+
+
+SELECT * FROM student
+WHERE sage <= 19;
+
+# 54
+SELECT *
+FROM sc
+WHERE Cno = '1' or Cno='2';
+SELECT *
+FROM sc
+WHERE Cno IN('1')
+UNION
+SELECT *
+FROM SC WHERE Cno IN('2');
+
+# 55
+SELECT *
+FROM student
+WHERE Sdept = 'CS' AND sage <= 19;
+
+SELECT *
+FROM student
+WHERE Sdept = 'CS'
+INTERSECT
+SELECT * FROM student WHERE sage <= 19;
+
+# 56
+SELECT *
+FROM student
+WHERE Sdept = 'CS' AND sage <= 19;
+
+SELECT * FROM student
+WHERE Sdept = 'CS'
+INTERSECT
+SELECT *
+FROM student WHERE sage <= 19;
+
+# 57
+SELECT *
+FROM sc
+WHERE Cno = '1' AND Cno = '2';
+SELECT *
+FROM sc
+WHERE Con IN('1', '2');
+SELECT *
+FROM sc
+WHERE Cno = '1'
+INTERSECT
+SELECT *
+FROM sc WHERE Cno LIKE '2';
+
+# 58
+SELECT *
+FROM student
+WHERE Sdept = 'CS'
+EXCEPT
+SELECT 8
+FROM student
+WHERE sage <= 19;
+
+SELECT *
+FROM student
+
+# 73
+SELECT *
+FROM student
+WHERE Ssex IS NULL
+UNION
+SELECT *
+FROM student
+WHERE Sage IS NULL
+UNION
+SELECT *
+FROM student
+WHERE sdept IS NULL;
+
+# 74
+SELECT Sno
+FROM sc
+WHERE Cno = '1' AND Grade < 60;
+
+# 75
+SELECT Sno
+FROM Sc
+WHERE Cno='1' AND Grade < 60;
+
+# 75
+SELECT Sno
+FROM sc
+WHERE Cno = '1' AND Grade < 60
+UNION
+SELECT Sno
+FROM Sc
+WHERE cno = '1' AND Grade IS NULL;
+
+# 76
+CREATE VIEW Is_Student
+AS SELECT * FROM student;
+
+# 78
+CREATE VIEW  Is_student_1
+AS 
+SELECT SC.Sno, Sname, Grade INTO Is_studnet_2
+FROM student, sc
+WHERE 
